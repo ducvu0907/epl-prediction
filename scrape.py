@@ -26,3 +26,16 @@ from io import StringIO
 matches = pd.read_html(StringIO(data.text), match="Scores & Fixtures") # extract matches table
 
 # print(matches[0])
+
+# scrape shooting stats
+soup = BeautifulSoup(data.text, "html.parser")
+links = soup.find_all("a")
+links = [link.get("href") for link in links]
+links = [link for link in links if link and "all_comps/shooting/" in link]
+# print(links)
+
+data = requests.get(f"https://fbref.com{links[0]}")
+shooting = pd.read_html(StringIO(data.text), match="Shooting")[0]
+# print(data.text)
+# print(shooting.head())
+shooting.columns = shooting.columns.droplevel() # remove multi-level index
